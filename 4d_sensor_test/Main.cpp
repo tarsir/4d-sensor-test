@@ -8,7 +8,19 @@ using std::endl;
 using namespace Magick;
 
 void questionOneOne() {
+	Image gratingCanvas("512x400", "white");
+	int gratingLines = 256;
+	double targetBrightness;
 
+	for (int i = 0; i < 2 * gratingLines; i += 2) {
+		targetBrightness = (2 * gratingLines - i) / 510.0;
+		
+		for (int j = 0; j < 400; j++) {
+			gratingCanvas.pixelColor(i, j, ColorGray(targetBrightness));
+		}
+	}
+
+	gratingCanvas.write("1dcanvas.png");
 }
 
 void questionOneTwo() {
@@ -18,6 +30,8 @@ void questionOneTwo() {
 void questionOne() {
 	questionOneOne();
 	questionOneTwo();
+
+	cout << "Question 1 complete!" << endl;
 }
 
 void questionTwoOne(Image originalImage, Image& processImage, size_t columns, size_t rows) {
@@ -61,7 +75,7 @@ void questionTwo() {
 	size_t columns = original_image.Image::columns();
 	size_t rows = original_image.Image::rows();
 
-	//questionTwoOne(original_image, processed_image, columns, rows);
+	questionTwoOne(original_image, processed_image, columns, rows);
 	questionTwoTwo(original_image, processed_image_two, columns, rows);
 	cout << "Question 2 complete!" << endl;
 }
@@ -70,7 +84,7 @@ int main(int argc, char** argv) {
 	InitializeMagick(*argv);
 
 	questionOne();
-	questionTwo();
+	//questionTwo();
 	cin.get();
 	return 0;
 }
