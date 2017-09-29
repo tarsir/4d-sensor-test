@@ -19,7 +19,7 @@ class InvalidPixelException : public std::exception {
 } InvalidPixelException;
 
 struct ComplexPixelBrightness {
-	double avgMiddleBrightness;
+	double avgMiddleBrightness, allPixelBrightness;
 	std::vector<ColorHSL> extremePixels;
 };
 
@@ -113,12 +113,12 @@ ComplexPixelBrightness surroundingPixelBrightnessAll(Image srcImage, size_t maxC
 	// construct our return object
 	cpb.extremePixels = extremePixels;
 	cpb.avgMiddleBrightness = std::accumulate(allPixels.begin(), allPixels.end(), 0.0, addPixelBrightness) / allPixels.size();
+	cpb.allPixelBrightness = avgBrightness;
 
 	bSum = 0;
 	for (auto i = allPixels.begin(); i < allPixels.end(); i++) {
 		bSum += i->lightness();
 	}
-
 
 	return cpb;
 }
@@ -131,7 +131,13 @@ bool isNoisy(double pixelBrightness, double surroundingBrightness) {
 	return 255 * abs(pixelBrightness - surroundingBrightness) > PIXEL_NOISE_THRESHOLD;
 }
 
-void overwriteExtremePixels(Image srcImage, Image& targetImage, std::vector<ColorHSL> overwriteList, size_t maxCols, size_t maxRows, int col, int row, double targetBrightness) {
+/*
+	Change the brightness of the extreme pixels to that of targetBrightness.
+
+	NOTE: This was implemented due to misreading the question 2-2. It's no longer used in the final solution
+	but is kept because it's kinda neat.
+*/
+void overwriteExtremePixels(const Image& srcImage, Image& targetImage, std::vector<ColorHSL> overwriteList, size_t maxCols, size_t maxRows, int col, int row, double targetBrightness) {
 	ColorHSL pixel;
 
 	for (int c = col - 1; c <= col + 1; c++) {

@@ -1,6 +1,9 @@
+#define _USE_MATH_DEFINES
 #include <Magick++.h>
 #include "PixelAnalysis.h"
 #include <iostream>
+#include <cmath>
+
 
 using std::cout;
 using std::cin;
@@ -20,11 +23,30 @@ void questionOneOne() {
 		}
 	}
 
-	gratingCanvas.write("1dcanvas.png");
+	gratingCanvas.write("1d_grating.png");
 }
 
 void questionOneTwo() {
+	Image gratingCanvas("512x512", "white");
+	int gratingLines = 256;
+	double targetBrightness;
+	double radianMultiple = 180 / M_PI;
 
+	for (int i = 0; i < 2 * gratingLines; i += 2) {
+		for (int j = 0; j < 512; j++) {
+			targetBrightness = cos(j / 512.0 * radianMultiple);
+			gratingCanvas.pixelColor(i, j, ColorGray(targetBrightness));
+		}
+	}
+
+	for (int i = 0; i < 2 * gratingLines; i += 2) {
+		for (int j = 0; j < 512; j++) {
+			targetBrightness = cos(j / 512.0 * radianMultiple);
+			gratingCanvas.pixelColor(j, i, ColorGray(targetBrightness));
+		}
+	}
+
+	gratingCanvas.write("2d_grating.png");
 }
 
 void questionOne() {
@@ -59,8 +81,9 @@ void questionTwoTwo(Image originalImage, Image& processImage, size_t columns, si
 			double pBrightness = brightness(pixel);
 			ComplexPixelBrightness cpb = surroundingPixelBrightnessAll(originalImage, columns, rows, i, j);
 
-			if (isNoisy(pBrightness, cpb.avgMiddleBrightness)) {
-				overwriteExtremePixels(originalImage, processImage, cpb.extremePixels, columns, rows, i, j, cpb.avgMiddleBrightness);
+			if (isNoisy(pBrightness, cpb.allPixelBrightness)) {
+				pixel.lightness(cpb.avgMiddleBrightness);
+				processImage.Image::pixelColor(i, j, pixel);
 			}
 		}
 	}
@@ -84,7 +107,7 @@ int main(int argc, char** argv) {
 	InitializeMagick(*argv);
 
 	questionOne();
-	//questionTwo();
+	questionTwo();
 	cin.get();
 	return 0;
 }
